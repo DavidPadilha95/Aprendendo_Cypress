@@ -33,4 +33,21 @@ describe('Testando a nivel funcional', () => {
         cy.inserirConta('Conta de teste versao 2')
         cy.validarMensagem('400')
     })
+
+    it('Criando uma nova transacao', () => {
+        cy.get(loc.MOVIMENTACAO.DESCRICAO).type('Desc')
+        cy.get(loc.MOVIMENTACAO.VALOR).type('123')
+        cy.get(loc.MOVIMENTACAO.INTERESSADO).type('Inter')
+        cy.get(loc.MOVIMENTACAO.STATUS).click()
+        cy.get(loc.MOVIMENTACAO.BTN_SALVAR).click()
+        cy.validarMensagem('sucesso')
+
+        cy.get('.list-group > li').should('have.length', 7)
+        //ver validao de xpath na aula 58
+    })
+
+    // it('Validar o saldo de uma conta')
+    // it('Remover uma movimentacao')
+
+
 })
