@@ -25,7 +25,7 @@ const locators = {
         FN_XP_BTN_ALTERAR: nome => `//table//td[contains(., '${nome}')]/..//i[@class='far fa-edit']`
     },
     MOVIMENTACAO:{
-        MENU_MOVI: '[data-test=menu-movimentacao]',
+        MENU_MOVIMENTACAO: '[data-test=menu-movimentacao]',
         DESCRICAO: '[data-test=descricao]',
         VALOR: '[data-test=valor]',
         INTERESSADO: '[data-test=envolvido]',

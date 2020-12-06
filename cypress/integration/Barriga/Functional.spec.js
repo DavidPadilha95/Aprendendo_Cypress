@@ -35,7 +35,7 @@ describe('Testando a nivel funcional', () => {
     })
 
     it('Criando uma nova transacao', () => {
-        cy.get(loc.MOVIMENTACAO.MENU_MOVI).click()
+        cy.get(loc.MOVIMENTACAO.MENU_MOVIMENTACAO).click()
         cy.get(loc.MOVIMENTACAO.DESCRICAO).type('Desc')
         cy.get(loc.MOVIMENTACAO.VALOR).type('123')
         cy.get(loc.MOVIMENTACAO.INTERESSADO).type('Inter')
