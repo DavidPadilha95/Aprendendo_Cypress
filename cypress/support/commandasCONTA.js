@@ -2,7 +2,7 @@ import loc from './locators'
 
 
 //COMO SE FOSSEM OS METODOS EM RUBY
-// Metodos é um consjunto de ações orientadas a objetos
+// Metodos são conjuntos de ações orientadas a objetos
 
 Cypress.Commands.add('acessarMenuConta', () =>{
     cy.get(loc.MENU.SETTINGS).click()
