@@ -14,17 +14,26 @@ Cypress.Commands.add('resetApp', () =>{ //Comando para resetar as contas antes d
     cy.get(loc.MENU.RESET).click()
 })
 
+
+// BACKEND
+
 Cypress.Commands.add('getToken',(user, passwd) =>{
     cy.request({
         method: 'POST',
-        url: 'https://barrigarest.wcaquino.me/signin',
+        url: '/signin',
         body:{  
             email: user,
             redirecionar: false,
             senha: passwd
         }
     }).its('body.token').should('not.be.empty')
-      .then(token => {
-            return token
-      }) //Esse é um teste que o token foi gerado
+})
+
+Cypress.Commands.add('resetRest', (token) =>{
+        cy.request({
+            method: 'GET',
+            url: '/reset',
+            headers: {Authorization: `JWT ${token}`}
+        }).its('status').should('be.equal', 200)
+    
 })

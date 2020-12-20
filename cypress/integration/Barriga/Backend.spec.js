@@ -1,7 +1,7 @@
 /// <reference types="cypress"/>
 // .then(res => console.log(res)) //para apresentar no console o que foi encontrado
 
-describe('Testando a nivel funcional', () => {
+describe('Testando a nivel backend', () => {
 
     let token //Crei a variavel do token
 
@@ -13,10 +13,15 @@ describe('Testando a nivel funcional', () => {
         
     })
 
+    beforeEach(() => {
+        cy.resetRest(token) // Estou pegando o token da variavel, nao preciso passar usuario e senha porque
+        // já estou pegando isso do token gerado pelo metodod anterior
+    })
+
     it('Criando novas contas', () => {
-                cy.request({
+            cy.request({
                 method: 'POST',
-                url: 'https://barrigarest.wcaquino.me/contas',
+                url: '/contas',
                 headers: {Authorization: `JWT ${token}`},
                 body: {
                  nome: 'Conta via rest'
@@ -32,11 +37,45 @@ describe('Testando a nivel funcional', () => {
     })
 
     it('Editando uma conta', () => {
-        
+        cy.request({
+            method: 'GET',
+            url: '/contas',
+            headers: {Authorization: `JWT ${token}`},
+            qs:{// qs = query string, é um parametro a ser implementado na url
+                nome: 'Conta para alterar'
+            }
+        }).then(res => { //Foi utilizado esse emtodo porque o ID por exemplo é dinamico, nao tem como buscar por ele
+            cy.request({
+                url: `/contas/${res.body[0].id}`,
+                method: 'PUT',
+                headers: {Authorization: `JWT ${token}`},
+                body:{
+                    nome: 'Conta alterada via rest'
+                }
+            }).as('response')
+        }).then(res => console.log(res)) //para apresentar no console o que foi encontrado
+        cy.get('@response').its('status').should('be.equal', 200)
+
     })
 
-    it('Tentando cadastrar uma conta igual a outra existente', () =>{
-       
+    it.only('Tentando cadastrar uma conta igual a outra existente', () => {
+        cy.request({
+            method: 'POST',
+            url: '/contas',
+            headers: {Authorization: `JWT ${token}`},
+            body: {
+             nome: 'Conta mesmo nome'
+            },
+            failOnStatusCode:false // Esse comando faz com que o teste seiga mesmo se der algum erros
+        }).as('response')
+
+    cy.get('@response').then(res => {
+        console.log
+        expect(res.status).to.be.equal(400)
+        expect(res.body).to.have.property('error', 'Já existe uma conta com esse nome!')
+        expect(res.body.error).to.equal('Já existe uma conta com esse nome!')// outra forma de validar a mensagem
+        })
+
     })
 
     it('Criando uma nova transacao', () => {

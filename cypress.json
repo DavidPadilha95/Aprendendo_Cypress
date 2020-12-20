@@ -1,3 +1,4 @@
 {
-    "defaultCommandTimeout": 40000
+    "defaultCommandTimeout": 40000,
+    "baseUrl": "https://barrigarest.wcaquino.me"
 }
