@@ -37,16 +37,11 @@ describe('Testando a nivel backend', () => {
     })
 
     it('Editando uma conta', () => {
-        cy.request({
-            method: 'GET',
-            url: '/contas',
-            headers: {Authorization: `JWT ${token}`},
-            qs:{// qs = query string, é um parametro a ser implementado na url
-                nome: 'Conta para alterar'
-            }
-        }).then(res => { //Foi utilizado esse emtodo porque o ID por exemplo é dinamico, nao tem como buscar por ele
+        cy.getContaByName('Conta para alterar')
+        .then(ContaID => { //Foi utilizado esse metodo porque o ID por exemplo é dinamico, nao tem como buscar por ele 
+            // nesse metodo criado ele traz unica a exclusivamente o id
             cy.request({
-                url: `/contas/${res.body[0].id}`,
+                url: `/contas/${ContaID}`,
                 method: 'PUT',
                 headers: {Authorization: `JWT ${token}`},
                 body:{
@@ -58,7 +53,7 @@ describe('Testando a nivel backend', () => {
 
     })
 
-    it.only('Tentando cadastrar uma conta igual a outra existente', () => {
+    it('Tentando cadastrar uma conta igual a outra existente', () => {
         cy.request({
             method: 'POST',
             url: '/contas',
@@ -66,7 +61,7 @@ describe('Testando a nivel backend', () => {
             body: {
              nome: 'Conta mesmo nome'
             },
-            failOnStatusCode:false // Esse comando faz com que o teste seiga mesmo se der algum erros
+            failOnStatusCode:false // Esse comando faz com que o teste siga mesmo se der algum erros
         }).as('response')
 
     cy.get('@response').then(res => {
@@ -79,11 +74,33 @@ describe('Testando a nivel backend', () => {
     })
 
     it('Criando uma nova transacao', () => {
-       
+       cy.getContaByName('Conta para movimentacoes')
+        .then(ContaID => {
+            cy.request({
+                method:'POST',
+                url:'/transacoes',
+                headers: {Authorization: `JWT ${token}`},
+                body: {
+                    conta_id: ContaID,
+                    data_pagamento: Cypress.moment().add({days: 1}).format('DD/MM/YYYY'), //pegando data atual +1 dia
+                    data_transacao: Cypress.moment().format('DD/MM/YYYY'), // pegando data atual
+                    descricao: 'desc',
+                    envolvido: 'inter',
+                    status: true,
+                    tipo: 'REC',
+                    valor: '123'
+                }
+            })
+        })
+           
     })
 
-    it('Validar o saldo de uma conta', () =>{
-     
+    it.only('Validar o saldo de uma conta', () =>{
+        cy.request({
+            url: '/saldo',
+            method: 'GET',
+            headers: {Authorization: `JWT ${token}`},
+        }).then(res => console.log(res))
     })
 
     it('Remover uma movimentacao', () => {

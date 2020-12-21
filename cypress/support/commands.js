@@ -17,7 +17,7 @@ Cypress.Commands.add('resetApp', () =>{ //Comando para resetar as contas antes d
 
 // BACKEND
 
-Cypress.Commands.add('getToken',(user, passwd) =>{
+Cypress.Commands.add('getToken',(user, passwd) =>{ //Nesse metodo ele só vai devolver o token
     cy.request({
         method: 'POST',
         url: '/signin',
@@ -27,6 +27,9 @@ Cypress.Commands.add('getToken',(user, passwd) =>{
             senha: passwd
         }
     }).its('body.token').should('not.be.empty')
+      .then (token =>{
+          return token
+      })  
 })
 
 Cypress.Commands.add('resetRest', (token) =>{
@@ -35,5 +38,22 @@ Cypress.Commands.add('resetRest', (token) =>{
             url: '/reset',
             headers: {Authorization: `JWT ${token}`}
         }).its('status').should('be.equal', 200)
+    
+})
+
+Cypress.Commands.add('getContaByName', (name) =>{ //Metodo para buscar o id da conta que queremos gerar ou modificar
+    cy.getToken('david.cypress@teste.com', 'teste123').then(token =>{
+        cy.request({
+            method: 'GET',
+            url: '/contas',
+            headers: {Authorization: `JWT ${token}`},
+            qs:{// qs = query string, é um parametro a ser implementado na url
+                nome: name
+                }
+        }).then(res =>{
+            return res.body[0].id
+        })   
+
+    })
     
 })
