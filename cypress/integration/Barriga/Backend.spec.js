@@ -74,7 +74,7 @@ describe('Testando a nivel backend', () => {
     })
 
     it('Criando uma nova transacao', () => {
-       cy.getContaByName('Conta para movimentacoes')
+       cy.getContaByName('Conta para movimentacoes',)
         .then(ContaID => {
             cy.request({
                 method:'POST',
@@ -95,15 +95,55 @@ describe('Testando a nivel backend', () => {
            
     })
 
-    it.only('Validar o saldo de uma conta', () =>{
+    it('Validar o saldo de uma conta', () =>{
         cy.request({
             url: '/saldo',
             method: 'GET',
             headers: {Authorization: `JWT ${token}`},
-        }).then(res => console.log(res))
+        }).then(res => {
+            let saldoConta= null
+            res.body.forEach(c => {
+                if(c.conta ==='Conta para saldo') saldoConta = c.saldo
+            })
+           expect(saldoConta).to.be.equal('534.00') 
+        })
+
+        cy.request({
+            method: 'GET',
+            url: '/transacoes',
+            headers: {Authorization: `JWT ${token}`},
+            qs: {descricao :'Movimentacao 1, calculo saldo'}
+        }).then(res => {
+            cy.request({
+                url: `/transacoes/${res.body[0].id}`,
+                method: 'PUT',
+                headers: {Authorization: `JWT ${token}`},
+                body: {
+                    status: true,
+                    data_pagamento: Cypress.moment(res.body[0].data_transacao).format('DD/MM/YYYY'),
+                    data_transacao: Cypress.moment(res.body[0].data_pagamento).format('DD/MM/YYYY'), 
+                    descricao: res.body[0].descricao,
+                    envolvido: res.body[0].envolvido,
+                    valor: res.body[0].valor,
+                    conta_id:res.body[0].conta_id
+                }
+            }).its('status').should('be.equal',200)
+        })  
     })
 
-    it('Remover uma movimentacao', () => {
+    it.only('Remover uma movimentacao', () => {
+        cy.request({
+        method: 'GET',
+        url: '/transacoes',
+        headers: {Authorization: `JWT ${token}`},
+        qs: {descricao :'Movimentacao para exclusao'}
+    }).then(res => {
+        cy.request({
+            url: `/transacoes/${res.body[0].id}`,
+            method: 'DELETE',
+            headers: {Authorization: `JWT ${token}`},
+        }).its('status').should('be.equal', 204)
+    })
        
     })
 

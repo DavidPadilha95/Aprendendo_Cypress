@@ -28,6 +28,7 @@ Cypress.Commands.add('getToken',(user, passwd) =>{ //Nesse metodo ele só vai de
         }
     }).its('body.token').should('not.be.empty')
       .then (token =>{
+          Cypress.env('token', token)
           return token
       })  
 })
@@ -57,3 +58,7 @@ Cypress.Commands.add('getContaByName', (name) =>{ //Metodo para buscar o id da c
     })
     
 })
+
+// Cypress.Commands.overwrite('request', (originalFn, ...options) =>{
+
+// })
