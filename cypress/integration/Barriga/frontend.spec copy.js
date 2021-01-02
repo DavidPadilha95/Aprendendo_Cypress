@@ -55,7 +55,7 @@ describe('Testando a nivel funcional', () => {
         cy.validarMensagem('Conta atualizada')
     })
 
-    it.only('Tentando cadastrar uma conta igual a outra existente', () =>{
+    it('Tentando cadastrar uma conta igual a outra existente', () =>{
         cy.route({
             method: 'POST',
             url: '/contas',
@@ -69,6 +69,19 @@ describe('Testando a nivel funcional', () => {
     })
 
     it('Criando uma nova transacao', () => {
+        cy.route({
+            method: "POST",
+            url: "/transacoes",
+            response: {"id":331846,"descricao":"tetete","envolvido":"tet","observacao":null,"tipo":"REC","data_transacao":"2021-01-02T03:00:00.000Z","data_pagamento":"2021-01-02T03:00:00.000Z","valor":"410.00","status":false,"conta_id":363825,"usuario_id":12504,"transferencia_id":null,"parcelamento_id":null},
+        }).as('criar transacao')
+
+            cy.route({
+                method: 'GET',
+                url: '/extrato/**',
+                response: 'fixture:movimentacaoSalva'
+
+            })
+
         cy.get(loc.MOVIMENTACAO.MENU_MOVIMENTACAO).click()
         cy.get(loc.MOVIMENTACAO.DESCRICAO).type('Desc')
         cy.get(loc.MOVIMENTACAO.VALOR).type('123')
@@ -81,7 +94,7 @@ describe('Testando a nivel funcional', () => {
         cy.xpath(loc.EXTRATO.FN_XP_BUSCA_ELEMENTO('Desc', '123')).should('exist')
     })
 
-    it('Validar o saldo de uma conta', () =>{
+    it.only('Validar o saldo de uma conta', () =>{
         cy.get(loc.MENU.HOME).click()
         cy.xpath(loc.SALDO.FN_XP_SALDO_CONTA('Conta para alterar'))
     })
